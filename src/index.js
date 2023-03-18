@@ -26,29 +26,38 @@ input.addEventListener('blur', event => {
 
 function handleInput() {
   let searchingPhrasesTrimmed = input.value.trim();
+  countryList.textContent = '';
   if (!searchingPhrasesTrimmed) {
-    countryList.textContent = '';
-  } else {
-    countryList.textContent = '';
-    fetchCountries(searchingPhrasesTrimmed)
-      .then(data => {
-        if (data.length > 10) {
-          Notiflix.Notify.info(
-            'Too many matches found. Please enter a more specific name.'
-          );
-        } else if (data.length === 1) {
-          renderOneCountry(data);
-        } else {
-          renderFilteredMatchingCountries(data);
-        }
-      })
-      .catch(error => {
-        // Error handling
-        countryList.textContent = '';
-        Notiflix.Notify.failure('Oops, there is no country with that name');
-      });
+    return;
   }
+  fetchCountries(searchingPhrasesTrimmed)
+    .then(data => {
+      if (data.length > 10) {
+        notifyAboutTooManyMatchesFound();
+        return;
+      }
+      if (data.length === 1) {
+        renderOneCountry(data);
+        return;
+      }
+      renderFilteredMatchingCountries(data);
+    })
+    .catch(error => {
+      // Error handling
+      notifyAboutError();
+      return;
+    });
 }
+
+const notifyAboutTooManyMatchesFound = () =>
+  Notiflix.Notify.info(
+    'Too many matches found. Please enter a more specific name.'
+  );
+
+const notifyAboutError = () => {
+  countryList.textContent = '';
+  Notiflix.Notify.failure('Oops, there is no country with that name');
+};
 
 function renderOneCountry(countries) {
   const markup = countries.map(country => {
