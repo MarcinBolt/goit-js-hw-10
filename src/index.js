@@ -74,7 +74,7 @@ function renderOneCountry(countries) {
         }</li>
         <li class="one-country-list-description"><span class="country-description-span">Languages: </span>${Object.values(
           country.languages
-        )}</li>
+        ).join(', ')}</li>
         </ul>`;
   });
   countryList.innerHTML = markup;
